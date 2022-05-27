@@ -1,5 +1,6 @@
 package com.example.wine;
 
+import com.example.wine.Type.Type;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -16,10 +17,11 @@ class TypeControllerTests {
     @Test
     void one() {
         webTestClient.get()
-                .uri("/type/1")
+                .uri("/type/23")
                 .exchange()
                 .expectBody()
-                .jsonPath("$.name").isEqualTo("Red");
+                .jsonPath("$.name")
+                .isEqualTo("Red");
     }
 
     @Test
@@ -27,7 +29,35 @@ class TypeControllerTests {
         webTestClient.get()
                 .uri("/type")
                 .exchange()
-                .expectBody()
-                .jsonPath("$.length()").isEqualTo(2);
+                .expectStatus().isOk()
+                .expectHeader().valueEquals("Content-Type","application/hal+json");
+    }
+
+    @Test
+    void createType() {
+
+        Type type = new Type();
+        webTestClient.post()
+                .uri("/type")
+                .bodyValue(type)
+                .exchange()
+                .expectStatus()
+                .isCreated();
+    }
+
+    @Test
+    void deleteType() {
+        webTestClient.delete()
+                .uri("/type/48")
+                .exchange()
+                .expectStatus().isEqualTo(204);
+    }
+
+    @Test
+    void typeNotFound() {
+        webTestClient.get()
+                .uri("/type/256")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }
