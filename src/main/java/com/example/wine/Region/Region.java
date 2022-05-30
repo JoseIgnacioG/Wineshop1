@@ -7,6 +7,7 @@ import lombok.Setter;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Getter
@@ -16,7 +17,9 @@ import java.util.Objects;
 public class Region {
     private @Id
     @GeneratedValue Long id;
+    @NotNull
     private String name;
+    @NotNull
     private String country;
 
     public Region(String name, String country) {

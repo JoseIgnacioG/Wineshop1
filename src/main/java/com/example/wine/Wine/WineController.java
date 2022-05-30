@@ -1,12 +1,17 @@
 package com.example.wine.Wine;
 
 import com.example.wine.NotFoundException;
+import com.example.wine.ResponseHandler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,14 +28,21 @@ public class WineController {
         this.repository = repository;
         this.assembler = assembler;
     }
+
     @PostMapping("/wine")
-    ResponseEntity<?> newWine(@RequestBody Wine newWine) {
+    ResponseEntity<?> newWine(@Valid @RequestBody Wine newWine, BindingResult bindingResult) {
 
-        EntityModel<Wine> entityModel = assembler.toModel(repository.save(newWine));
+        if(bindingResult.hasErrors()){
+            throw new NotFoundException(newWine.getId());
+        } else {
+            EntityModel<Wine> entityModel = assembler.toModel(repository.save(newWine));
+            return ResponseEntity //
+                    .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+                    .body(entityModel);
+        }
 
-        return ResponseEntity //
-                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
-                .body(entityModel);
+
+//        return ResponseHandler.generateResponse("Acidity cannot be out of 1-5 range!", HttpStatus.MULTI_STATUS, entityModel);
     }
 
     @GetMapping("/wine/{id}")
