@@ -1,5 +1,7 @@
 package com.example.wine;
 
+import com.example.wine.Region.Region;
+import com.example.wine.Type.Type;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -16,11 +18,11 @@ class RegionControllerTests {
     @Test
     void one() {
         webTestClient.get()
-                .uri("/region/1")
+                .uri("/region/20")
                 .exchange()
-                .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.name").isEqualTo("Alicante");
+                .jsonPath("$.name")
+                .isEqualTo("Alicante");
     }
 
     @Test
@@ -29,6 +31,34 @@ class RegionControllerTests {
                 .uri("/region")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody().jsonPath("$.length()").isEqualTo(2);
+                .expectHeader().valueEquals("Content-Type","application/hal+json");
+    }
+
+    @Test
+    void createRegion() {
+
+        Region region = new Region();
+        webTestClient.post()
+                .uri("/region")
+                .bodyValue(region)
+                .exchange()
+                .expectStatus()
+                .isCreated();
+    }
+
+    @Test
+    void deleteRegion() {
+        webTestClient.delete()
+                .uri("/region/60")
+                .exchange()
+                .expectStatus().isEqualTo(204);
+    }
+
+    @Test
+    void regionNotFound() {
+        webTestClient.get()
+                .uri("/region/256")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }

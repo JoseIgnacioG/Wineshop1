@@ -7,33 +7,58 @@ import com.example.wine.Winery.Winery;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Range;
+import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
+import java.util.Calendar;
 import java.util.Objects;
 
 @Getter
 @Setter
 @Entity
+@Valid
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Wine {
     @Id
     @GeneratedValue
+    @NotNull(message = "Id cannot be null")
     private Long id;
 
+    @NotEmpty(message = "Name cannot be empty")
     private String name;
+    @NotNull
+    @Range(min = 1900, max = 2022, message = "Year must be between [1900 - 2022]")
+//    @Range(min = 1900, max = Calendar.YEAR, message = "Year must be between [1900 - " + Calendar.YEAR + "]")
+
     private int wineYear;
+    @NotNull
+    @Range(min = 0, max = 5, message = "Rating must be between [0 - 5]")
     private float rating;
+    @NotNull
+    @Min(value = 0, message = "Review number cannot be negative")
     private int num_reviews;
+    @NotNull
+    @Min(value = 0, message = "Price number cannot be negative")
     private int price;
+    @NotNull
+    @Range(min = 1, max = 5, message = "Body must be between [1 - 5]")
     private int body;
+    @NotNull
+    @Range(min = 1, max = 5, message = "Acidity must be between [1 - 5]")
     private int acidity;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "region")
     private Region region;
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "type")
     private Type type;
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "winery")
     private Winery winery;

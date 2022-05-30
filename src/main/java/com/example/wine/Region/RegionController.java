@@ -25,7 +25,6 @@ class RegionController {
     ResponseEntity<?> newRegion(@RequestBody Region newRegion) {
 
         EntityModel<Region> entityModel = assembler.toModel(repository.save(newRegion));
-
         return ResponseEntity //
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
                 .body(entityModel);
